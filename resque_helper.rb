@@ -23,7 +23,7 @@ module ResqueHelper
       end
 
     def transform_product_id(product_id, variant_id)
-
+        #stub here
 
     end
 
