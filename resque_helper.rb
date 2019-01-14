@@ -153,9 +153,9 @@ module ResqueHelper
                 customer_id = sub.customer_id
                 puts "my customer_id = #{customer_id}"
                 my_customer = Customer.find_by_customer_id(customer_id)
-                address1 = "  "
-                address2 = "   "
-                company = "   "
+                address1 = "asd"
+                address2 = "asd"
+                company = "asd"
                 if !my_customer.billing_address1.nil? && my_customer.billing_address1 != ""
                     address1 = my_customer.billing_address1
                 end
