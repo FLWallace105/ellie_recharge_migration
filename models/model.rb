@@ -22,3 +22,7 @@ end
 class StagingProductInfo < ActiveRecord::Base
   self.table_name = "staging_product_info"
 end
+
+class Customer < ActiveRecord::Base
+  self.table_name = "customers"
+end
