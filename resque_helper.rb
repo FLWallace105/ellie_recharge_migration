@@ -117,6 +117,7 @@ module ResqueHelper
       puts new_subscription.inspect
       recharge_limit = new_subscription.response["x-recharge-limit"]
       determine_limits(recharge_limit, 0.65)
+      sleep 3
       my_token = new_subscription.parsed_response['checkout']['token']
       data ={
         "checkout_charge": {
