@@ -157,6 +157,7 @@ module ResqueHelper
                 address1 = "asd"
                 address2 = "asd"
                 company = "asd"
+                phone = "5554447777"
                 if !my_customer.billing_address1.nil? && my_customer.billing_address1 != ""
                     address1 = my_customer.billing_address1
                 end
@@ -166,6 +167,10 @@ module ResqueHelper
                 if !my_customer.billing_company.nil? && my_customer.billing_company != ""
                     company = my_customer.billing_company
                 end
+                if !my_customer.billing_phone.nil? && my_customer.billing_phone != ""
+                    phone = my_customer.billing_phone
+                end
+
                 puts "Constructing params"
                 params = {"my_properties" => my_properties, "product_id" => my_prod_var['staging_product_id'], "variant_id" => my_prod_var['staging_variant_id'], "sku" => my_prod_var['staging_sku'], "charge_interval_frequency" => sub.charge_interval_frequency, "price" => sub.price, "quantity" => sub.quantity, "order_interval_frequency" => sub.order_interval_frequency, "order_interval_unit" => sub.order_interval_unit, "product_title" => sub.product_title, "email" => my_customer.email, "address1" => address1, "address2" => address2, "city" => my_customer.billing_city, "company" => company, "country" => my_customer.billing_country, "first_name" => my_customer.first_name, "last_name" => my_customer.last_name, "phone" => my_customer.billing_phone, "province" => my_customer.billing_province, "zip" => my_customer.billing_zip, "recharge_change_header" => recharge_change_header}
                 migrate_checkout(params)
