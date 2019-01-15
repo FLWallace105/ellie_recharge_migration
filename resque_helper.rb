@@ -118,7 +118,13 @@ module ResqueHelper
       recharge_limit = new_subscription.response["x-recharge-limit"]
       determine_limits(recharge_limit, 0.65)
       sleep 3
+      if new_subscription.parsed_response['error']
+        puts "We have an error condition"
+        my_return_value = {"subscription_created" => false}
+        return my_return_value
+      end
       my_token = new_subscription.parsed_response['checkout']['token']
+      
       data ={
         "checkout_charge": {
             "free": false,
@@ -131,6 +137,8 @@ module ResqueHelper
         puts my_processing.inspect
        recharge_limit = my_processing.response["x-recharge-limit"]
        determine_limits(recharge_limit, 0.65)
+       my_return_value = {"subscription_created" => true}
+       return my_return_value
   
       end
     
@@ -173,20 +181,24 @@ module ResqueHelper
                     phone = my_customer.billing_phone
                 end
                 if !my_customer.first_name.nil? && my_customer.first_name != ""
-                    phone = my_customer.first_name
+                    first_name = my_customer.first_name
                 end
                 if !my_customer.last_name.nil? && my_customer.last_name != ""
-                    phone = my_customer.last_name
+                    last_name = my_customer.last_name
                 end
 
                 puts "Constructing params"
                 params = {"my_properties" => my_properties, "product_id" => my_prod_var['staging_product_id'], "variant_id" => my_prod_var['staging_variant_id'], "sku" => my_prod_var['staging_sku'], "charge_interval_frequency" => sub.charge_interval_frequency, "price" => sub.price, "quantity" => sub.quantity, "order_interval_frequency" => sub.order_interval_frequency, "order_interval_unit" => sub.order_interval_unit, "product_title" => sub.product_title, "email" => my_customer.email, "address1" => address1, "address2" => address2, "city" => my_customer.billing_city, "company" => company, "country" => my_customer.billing_country, "first_name" => first_name, "last_name" => last_name, "phone" => phone, "province" => my_customer.billing_province, "zip" => my_customer.billing_zip, "recharge_change_header" => recharge_change_header}
-                migrate_checkout(params)
-                sub.migrated_to_staging = true
-                time_updated = DateTime.now
-                time_updated_str = time_updated.strftime("%Y-%m-%d %H:%M:%S")
-                sub.processed_at = time_updated_str
-                sub.save!
+                my_process_value = migrate_checkout(params)
+                if my_process_value['subscription_created'] == "true"
+                    sub.migrated_to_staging = true
+                    time_updated = DateTime.now
+                    time_updated_str = time_updated.strftime("%Y-%m-%d %H:%M:%S")
+                    sub.processed_at = time_updated_str
+                    sub.save!
+                else
+                    next
+                end
 
                 
             else
