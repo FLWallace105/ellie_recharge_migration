@@ -44,6 +44,12 @@ task :load_product_transformations do |t|
     PrepMigration::Setup.new.setup_transformations_table
 end
 
+#reload_product_transformations
+desc 'reload product_transformations table from CSV file'
+task :reload_product_transformations_table do |t|
+    PrepMigration::Setup.new.reload_product_transformations
+end
+
 #setup_staging_product_info
 desc 'set up staging product info for transformations table'
 task :setup_staging_product_transformation do |t|

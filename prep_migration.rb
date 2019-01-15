@@ -123,6 +123,19 @@ module PrepMigration
 
   end
 
+  def reload_product_transformations
+    puts "Starting reload product_transformations table from CSV"
+    ProductTransformation.delete_all
+    ActiveRecord::Base.connection.reset_pk_sequence!('product_transformations')
+    CSV.foreach('product_transformations_export.csv', :encoding => 'ISO-8859-1', :headers => true) do |row|
+      puts row.inspect
+      my_transformation = ProductTransformation.create(production_title: row['production_title'], production_product_id: row['production_product_id'], staging_product_id: row['staging_product_id'], staging_variant_id: row['staging_variant_id'], staging_sku: row['staging_sku'])
+
+    end
+
+
+  end
+
 
   def setup_subscriptons_migration
     puts "Howdy"
