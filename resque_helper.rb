@@ -49,7 +49,7 @@ module ResqueHelper
         else
             puts "Can't find transformation data"
             stuff_to_return = {"staging_product_id" => "nothing", "staging_variant_id" => "nothing", "staging_sku" => "nothing"}
-
+            return stuff_to_return
         end
 
     end
@@ -142,6 +142,13 @@ module ResqueHelper
   
       end
     
+    def transform_email(email)
+        puts "Email currently is #{email}"
+        new_email = email.gsub(/@\S+/i, "@zobha.com")
+        puts "new_email = #{new_email}"
+        return new_email
+
+    end
 
 
 
@@ -155,6 +162,7 @@ module ResqueHelper
         my_subs.each do |sub|
             puts sub.inspect
             my_properties = transform_properties(sub.raw_line_item_properties)
+            
             my_prod_var = transform_product_id(sub.shopify_product_id)
             puts my_properties
             if my_prod_var['staging_product_id'] != "nothing"
@@ -162,6 +170,7 @@ module ResqueHelper
                 customer_id = sub.customer_id
                 puts "my customer_id = #{customer_id}"
                 my_customer = Customer.find_by_customer_id(customer_id)
+                my_properties['customer_email'] = my_customer.email
                 address1 = "asd"
                 address2 = "asd"
                 company = "asd"
@@ -187,8 +196,12 @@ module ResqueHelper
                     last_name = my_customer.last_name
                 end
 
+                local_email = my_customer.email
+                my_new_email = transform_email(local_email)
+
+
                 puts "Constructing params"
-                params = {"my_properties" => my_properties, "product_id" => my_prod_var['staging_product_id'], "variant_id" => my_prod_var['staging_variant_id'], "sku" => my_prod_var['staging_sku'], "charge_interval_frequency" => sub.charge_interval_frequency, "price" => sub.price, "quantity" => sub.quantity, "order_interval_frequency" => sub.order_interval_frequency, "order_interval_unit" => sub.order_interval_unit, "product_title" => sub.product_title, "email" => my_customer.email, "address1" => address1, "address2" => address2, "city" => my_customer.billing_city, "company" => company, "country" => my_customer.billing_country, "first_name" => first_name, "last_name" => last_name, "phone" => phone, "province" => my_customer.billing_province, "zip" => my_customer.billing_zip, "recharge_change_header" => recharge_change_header}
+                params = {"my_properties" => my_properties, "product_id" => my_prod_var['staging_product_id'], "variant_id" => my_prod_var['staging_variant_id'], "sku" => my_prod_var['staging_sku'], "charge_interval_frequency" => sub.charge_interval_frequency, "price" => sub.price, "quantity" => sub.quantity, "order_interval_frequency" => sub.order_interval_frequency, "order_interval_unit" => sub.order_interval_unit, "product_title" => sub.product_title, "email" => my_new_email, "address1" => address1, "address2" => address2, "city" => my_customer.billing_city, "company" => company, "country" => my_customer.billing_country, "first_name" => first_name, "last_name" => last_name, "phone" => phone, "province" => my_customer.billing_province, "zip" => my_customer.billing_zip, "recharge_change_header" => recharge_change_header}
                 my_process_value = migrate_checkout(params)
                 if my_process_value['subscription_created'] == "true"
                     sub.migrated_to_staging = true
