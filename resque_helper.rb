@@ -140,7 +140,7 @@ module ResqueHelper
        my_return_value = {"subscription_created" => true}
        return my_return_value
   
-      end
+    end
     
     def transform_email(email)
         puts "Email currently is #{email}"
@@ -209,6 +209,7 @@ module ResqueHelper
                     time_updated_str = time_updated.strftime("%Y-%m-%d %H:%M:%S")
                     sub.processed_at = time_updated_str
                     sub.save!
+                    puts "Migration Record SAVED!"
                 else
                     next
                 end
