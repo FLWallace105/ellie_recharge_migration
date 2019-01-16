@@ -118,7 +118,7 @@ module ResqueHelper
       recharge_limit = new_subscription.response["x-recharge-limit"]
       determine_limits(recharge_limit, 0.65)
       sleep 3
-      if new_subscription.parsed_response['error']
+      if new_subscription.parsed_response['errors']
         puts "We have an error condition"
         my_return_value = {"subscription_created" => false}
         return my_return_value
